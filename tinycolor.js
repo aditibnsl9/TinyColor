@@ -373,7 +373,62 @@ function rgbToRgb(r, g, b){
         b: bound01(b, 255) * 255
     };
 }
+function colorWheel_rgbToCmyk(r, g, b, normalized) {
+    var c = 1 - (r / 255);
+    var m = 1 - (g / 255);
+    var y = 1 - (b / 255);
+    var k = Math.min(c, Math.min(m, y));
 
+    c = (c - k) / (1 - k);
+    m = (m - k) / (1 - k);
+    y = (y - k) / (1 - k);
+
+    if (!normalized) {
+        c = Math.round(c * 10000) / 100;
+        m = Math.round(m * 10000) / 100;
+        y = Math.round(y * 10000) / 100;
+        k = Math.round(k * 10000) / 100;
+    }
+
+    c = isNaN(c) ? 0 : c;
+    m = isNaN(m) ? 0 : m;
+    y = isNaN(y) ? 0 : y;
+    k = isNaN(k) ? 0 : k;
+
+    return {
+        c: c,
+        m: m,
+        y: y,
+        k: k
+    }
+}
+
+function colorWheel_cmykToRgb(c, m, y, k, normalized) {
+    c = (c / 100);
+    m = (m / 100);
+    y = (y / 100);
+    k = (k / 100);
+
+    c = c * (1 - k) + k;
+    m = m * (1 - k) + k;
+    y = y * (1 - k) + k;
+
+    var r = 1 - c;
+    var g = 1 - m;
+    var b = 1 - y;
+
+    if (!normalized) {
+        r = Math.round(255 * r);
+        g = Math.round(255 * g);
+        b = Math.round(255 * b);
+    }
+
+    return {
+        r: r,
+        g: g,
+        b: b
+    }
+}
 // `rgbToHsl`
 // Converts an RGB color value to HSL.
 // *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
